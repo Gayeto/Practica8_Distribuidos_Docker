@@ -1,0 +1,23 @@
+name: Build and Push Docker Image to ACR
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🧾 Clonar el repositorio
+        uses: actions/checkout@v3
+
+      - name: 🔐 Iniciar sesión en Azure Container Registry
+        run: echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login ${{ secrets.REGISTRY_URL }} -u ${{ secrets.REGISTRY_USERNAME }} --password-stdin
+
+      - name: 🛠️ Construir imagen Docker
+        run: docker build -t ${{ secrets.REGISTRY_URL }}/mi-pwa-tareas-app:latest .
+
+      - name: 🚀 Subir imagen a Azure Container Registry
+        run: docker push ${{ secrets.REGISTRY_URL }}/mi-pwa-tareas-app:latest
